@@ -1,102 +1,117 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TODO管理アプリ</title>
-<style>
-  body {
-    font-family: sans-serif;
-  }
-  h1 {
-    text-align: center;
-  }
-  .container {
-    display: flex;
-    justify-content: space-around;
-    border-collapse: collapse;
-  }
-  .column {
-    border: 1px solid black;
-    padding: 20px;
-    width: 30%;
-  }
-  .column h2 {
-    text-align: center;
-  }
-  input[type="checkbox"] {
-    margin-right: 5px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO管理アプリ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+    }
+    .column {
+      flex: 1;
+      padding: 0 10px;
+      border-right: 1px solid #000;
+    }
+    .column:last-child {
+      border-right: none;
+    }
+    .add-task {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
   <h1>TODO管理アプリ</h1>
-  <p>使い方：タスクを入力し、追加ボタンをクリックしてください。</p>
-  <input type="text" id="taskInput" placeholder="タスクを入力">
-  <button id="addTask">追加</button>
+  <p>使い方: タスクを入力し、「追加」ボタンを押してください。DoingとDoneのチェックボックスを使って、タスクの進捗を管理できます。</p>
+  <div class="add-task">
+    <input type="text" id="taskInput" placeholder="タスクを入力してください">
+    <button id="addTaskButton">追加</button>
+  </div>
   <div class="container">
-    <div class="column" id="todo">
+    <div class="column" id="todoColumn">
       <h2>TODO</h2>
     </div>
-    <div class="column" id="doing">
+    <div class="column" id="doingColumn">
       <h2>DOING</h2>
     </div>
-    <div class="column" id="done">
+    <div class="column" id="doneColumn">
       <h2>DONE</h2>
     </div>
   </div>
 
   <script>
+    const addTaskButton = document.getElementById("addTaskButton");
     const taskInput = document.getElementById("taskInput");
-    const addTask = document.getElementById("addTask");
-    const todo = document.getElementById("todo");
-    const doing = document.getElementById("doing");
-    const done = document.getElementById("done");
+    const todoColumn = document.getElementById("todoColumn");
+    const doingColumn = document.getElementById("doingColumn");
+    const doneColumn = document.getElementById("doneColumn");
 
-    addTask.addEventListener("click", () => {
-      const task = taskInput.value.trim();
-      if (task) {
-        createTaskItem(task);
-        taskInput.value = "";
-      }
-    });
+    function createTaskElement(taskText) {
+      const taskWrapper = document.createElement("div");
+      taskWrapper.classList.add("task");
 
-    function createTaskItem(task) {
-      const taskItem = document.createElement("div");
+      const task = document.createElement("span");
+      task.innerText = taskText;
+
       const doingCheckbox = document.createElement("input");
-      const doneCheckbox = document.createElement("input");
-      const taskText = document.createTextNode(task);
-
       doingCheckbox.type = "checkbox";
-      doneCheckbox.type = "checkbox";
-
+      doingCheckbox.classList.add("doing-checkbox");
       doingCheckbox.addEventListener("change", () => {
         if (doingCheckbox.checked) {
           doneCheckbox.checked = false;
-          todo.removeChild(taskItem);
-          doing.appendChild(taskItem);
+          doingColumn.appendChild(taskWrapper);
         } else {
-          doing.removeChild(taskItem);
-          todo.appendChild(taskItem);
+          todoColumn.appendChild(taskWrapper);
         }
       });
 
+      const doneCheckbox = document.createElement("input");
+      doneCheckbox.type = "checkbox";
+      doneCheckbox.classList.add("done-checkbox");
       doneCheckbox.addEventListener("change", () => {
         if (doneCheckbox.checked) {
           doingCheckbox.checked = false;
-          todo.removeChild(taskItem);
-          done.appendChild(taskItem);
+          doneColumn.appendChild(taskWrapper);
         } else {
-          done.removeChild(taskItem);
-          todo.appendChild(taskItem);
+          todoColumn.appendChild(taskWrapper);
         }
       });
 
-      taskItem.appendChild(doingCheckbox);
-      taskItem.appendChild(doneCheckbox);
-      taskItem.appendChild(taskText);
-      todo.insertBefore(taskItem, todo.firstChild);
+      taskWrapper.appendChild(doingCheckbox);
+      taskWrapper.appendChild(doneCheckbox);
+      taskWrapper.appendChild(task);
+
+      return taskWrapper;
     }
+
+    addTaskButton.addEventListener("click", () => {
+      const taskText = taskInput.value.trim();
+      if (!taskText) {
+        alert("タスクを入力してください");
+        return;
+      }
+
+      const taskElement = createTaskElement(taskText);
+      todoColumn.appendChild(taskElement);
+      taskInput.value = "";
+    });
+
+    taskInput.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        addTaskButton.click();
+      }
+    });
+
   </script>
 </body>
 </html>
