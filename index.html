@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TODO管理アプリ</title>
+<style>
+  body {
+    font-family: sans-serif;
+  }
+  h1 {
+    text-align: center;
+  }
+  .container {
+    display: flex;
+    justify-content: space-around;
+    border-collapse: collapse;
+  }
+  .column {
+    border: 1px solid black;
+    padding: 20px;
+    width: 30%;
+  }
+  .column h2 {
+    text-align: center;
+  }
+  input[type="checkbox"] {
+    margin-right: 5px;
+  }
+</style>
+</head>
+<body>
+  <h1>TODO管理アプリ</h1>
+  <p>使い方：タスクを入力し、追加ボタンをクリックしてください。</p>
+  <input type="text" id="taskInput" placeholder="タスクを入力">
+  <button id="addTask">追加</button>
+  <div class="container">
+    <div class="column" id="todo">
+      <h2>TODO</h2>
+    </div>
+    <div class="column" id="doing">
+      <h2>DOING</h2>
+    </div>
+    <div class="column" id="done">
+      <h2>DONE</h2>
+    </div>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById("taskInput");
+    const addTask = document.getElementById("addTask");
+    const todo = document.getElementById("todo");
+    const doing = document.getElementById("doing");
+    const done = document.getElementById("done");
+
+    addTask.addEventListener("click", () => {
+      const task = taskInput.value.trim();
+      if (task) {
+        createTaskItem(task);
+        taskInput.value = "";
+      }
+    });
+
+    function createTaskItem(task) {
+      const taskItem = document.createElement("div");
+      const doingCheckbox = document.createElement("input");
+      const doneCheckbox = document.createElement("input");
+      const taskText = document.createTextNode(task);
+
+      doingCheckbox.type = "checkbox";
+      doneCheckbox.type = "checkbox";
+
+      doingCheckbox.addEventListener("change", () => {
+        if (doingCheckbox.checked) {
+          doneCheckbox.checked = false;
+          todo.removeChild(taskItem);
+          doing.appendChild(taskItem);
+        } else {
+          doing.removeChild(taskItem);
+          todo.appendChild(taskItem);
+        }
+      });
+
+      doneCheckbox.addEventListener("change", () => {
+        if (doneCheckbox.checked) {
+          doingCheckbox.checked = false;
+          todo.removeChild(taskItem);
+          done.appendChild(taskItem);
+        } else {
+          done.removeChild(taskItem);
+          todo.appendChild(taskItem);
+        }
+      });
+
+      taskItem.appendChild(doingCheckbox);
+      taskItem.appendChild(doneCheckbox);
+      taskItem.appendChild(taskText);
+      todo.insertBefore(taskItem, todo.firstChild);
+    }
+  </script>
+</body>
+</html>
